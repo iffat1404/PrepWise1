@@ -1,15 +1,15 @@
-// frontend/src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const checkLoggedIn = async () => {
@@ -26,7 +26,7 @@ const AuthProvider = ({ children }) => {
           }
         };
 
-        const response = await axios.get('http://localhost:5000/api/auth/me', config);
+        const response = await axios.get(`${BASE_URL}/api/auth/me`, config);
         setUser(response.data.user);
       } catch (error) {
         localStorage.removeItem('token');
@@ -38,14 +38,14 @@ const AuthProvider = ({ children }) => {
     };
 
     checkLoggedIn();
-  }, []);
+  }, [BASE_URL]);
 
   const login = async (email, password) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${BASE_URL}/api/auth/login`, {
         email,
         password
       });
@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post(`${BASE_URL}/api/auth/register`, {
         name,
         email,
         password
@@ -95,7 +95,7 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await axios.post('http://localhost:5000/api/auth/forgotpassword', {
+      const response = await axios.post(`${BASE_URL}/api/auth/forgotpassword`, {
         email
       });
 
@@ -114,7 +114,7 @@ const AuthProvider = ({ children }) => {
       setError(null);
 
       const response = await axios.put(
-        `http://localhost:5000/api/auth/resetpassword/${resetToken}`,
+        `${BASE_URL}/api/auth/resetpassword/${resetToken}`,
         { password }
       );
 
